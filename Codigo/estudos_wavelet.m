@@ -19,8 +19,8 @@ s_n = r_n(1,:);
 t_e = (1/250)*(1:length(s_e));
 t_n = (1/250)*(1:length(s_n));
  
-s_epilesia = filter(b,a,s_e);
-s_normal = filter(b,a,s_n);
+s_e = filter(b,a,s_e);
+s_n = filter(b,a,s_n);
 
 figure
 subplot(211)
