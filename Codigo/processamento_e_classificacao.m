@@ -1,6 +1,18 @@
 close all;
 clc;
 
+%{
+    Mudar o método de treinamento, usar vetores de caracteríscas conhecidos
+    para treinamento e os gerados aleatoriamente para teste de
+    classificação. Futuramente aumentar a quantidade de entradas para
+    treinamento, para isso, usar a base de dados de convulsão.
+    
+    OBS 1: Com somente duas entradas (normal e epiléptica) a rede ficou mau
+    treinada. Decidi manter por enquanto as entradas geradas para treinar a
+    rede. Aumentei a quantidade para 10.000 entradas, 5.000 epilépticas e
+    5.000 normais, respectivamente nessa ordem.
+%}
+
 [h_e,r_e] = edfread('00000883_s003_t000.edf'); %Epilepsia
 [h_n,r_n] = edfread('00006801_s001_t001.edf'); %Normal
 
@@ -54,13 +66,13 @@ plot(f_n,ft_s_n)
 xlabel('Frequencia(Hz)')
 title('Transformada de Fourier do sinal normal')
 
-%Decomposição em DWT
+%Decomposição em DWT (Epilepsia)
 
 wname = 'db5';
 
 [LoD,HiD,LoR,HiR] = wfilters(wname);
 
-[c,l] = wavedec(s_e,5,LoD,HiD); %Mudar para epiléptico ou normal (s_e ou s_n)
+[c,l] = wavedec(s_e,5,LoD,HiD);
 [cd1,cd2,cd3,cd4,cd5] = detcoef(c,l,[1 2 3 4 5]);
 [ca5] = appcoef(c,l,wname,5);
 
@@ -71,25 +83,22 @@ s_mean = mean([mean(cd1) mean(cd2) mean(cd3) mean(cd4) mean(cd5) mean(ca5)]);
 s_max = max([max(cd1) max(cd2) max(cd3) max(cd4) max(cd5) max(ca5)]);
 s_min = min([min(cd1) min(cd2) min(cd3) min(cd4) min(cd5) min(ca5)]);
 
-feat_v = [s_std s_mean s_max s_min]'; %Feature Vector
+feat_v_e = [s_std s_mean s_max s_min]'; %Feature Vector
 
-%Plotagem das decomposições de Wavelet
+%Decomposição em DWT (Normal)
 
-%{
-figure
-subplot(611)
-plot(cd1)
-subplot(612)
-plot(cd2)
-subplot(613)
-plot(cd3)
-subplot(614)
-plot(cd4)
-subplot(615)
-plot(cd5)
-subplot(616)
-plot(ca5)
-%}
+[c,l] = wavedec(s_n,5,LoD,HiD);
+[cd1,cd2,cd3,cd4,cd5] = detcoef(c,l,[1 2 3 4 5]);
+[ca5] = appcoef(c,l,wname,5);
+
+%Feature Aquisition
+
+s_std = std([std(cd1) std(cd2) std(cd3) std(cd4) std(cd5) std(ca5)]);
+s_mean = mean([mean(cd1) mean(cd2) mean(cd3) mean(cd4) mean(cd5) mean(ca5)]);
+s_max = max([max(cd1) max(cd2) max(cd3) max(cd4) max(cd5) max(ca5)]);
+s_min = min([min(cd1) min(cd2) min(cd3) min(cd4) min(cd5) min(ca5)]);
+
+feat_v_n = [s_std s_mean s_max s_min]'; %Feature Vector
 
 %Saídas de teste (1 = epilepsia e 0 = normal)
 
@@ -107,14 +116,14 @@ rng(0,'twister'); %Gerador de números aleatórios
 a = 40;
 b = 100;
 
-std_x_e = (b-a).*rand(100,1) + a; %Vetor com 100 valores aleatórios entre 40 e 100
+std_x_e = (b-a).*rand(5001,1) + a; %Vetor com 100 valores aleatórios entre 40 e 100
 
 %Normal
 
 a = 5;
 b = 20;
 
-std_x_n = (b-a).*rand(100,1) + a; %Vetor com 100 valores aleatórios entre 5 e 20
+std_x_n = (b-a).*rand(5001,1) + a; %Vetor com 100 valores aleatórios entre 5 e 20
 
 %Valor Médio
 
@@ -123,14 +132,14 @@ std_x_n = (b-a).*rand(100,1) + a; %Vetor com 100 valores aleatórios entre 5 e 20
 a = -6;
 b = -2;
 
-mean_x_e = (b-a).*rand(100,1) + a;
+mean_x_e = (b-a).*rand(5001,1) + a;
 
 %Normal
 
 a = -1;
 b = 3;
 
-mean_x_n = (b-a).*rand(100,1) + a;
+mean_x_n = (b-a).*rand(5001,1) + a;
 
 %Valor Máximo
 
@@ -139,14 +148,14 @@ mean_x_n = (b-a).*rand(100,1) + a;
 a = 1000;
 b = 2000;
 
-max_x_e = (b-a).*rand(100,1) + a;
+max_x_e = (b-a).*rand(5001,1) + a;
 
 %Normal
 
 a = 200;
 b = 600;
 
-max_x_n = (b-a).*rand(100,1) + a;
+max_x_n = (b-a).*rand(5001,1) + a;
 
 %Valor Mínimo
 
@@ -155,28 +164,37 @@ max_x_n = (b-a).*rand(100,1) + a;
 a = -2000;
 b = -1000;
 
-min_x_e = (b-a).*rand(100,1) + a;
+min_x_e = (b-a).*rand(5001,1) + a;
 
 %Normal
 
 a = -600; 
 b = -200;
 
-min_x_n = (b-a).*rand(100,1) + a;
+min_x_n = (b-a).*rand(5001,1) + a;
 
 %Vetor de entrada e sáida para treinamento
+
+feat_v = [feat_v_e feat_v_n];
+y_v = [1 0];
 
 x_e = [std_x_e mean_x_e max_x_e min_x_e];
 x_n = [std_x_n mean_x_n max_x_n min_x_n];
 
 x = [x_e' x_n'];
 
-y(1:4,1:100) = y_e;
-y(1:4,101:200) = y_n;
+y(1,1:5001) = y_e;
+y(1,5002:10002) = y_n;
 
-v = [x,y];
+%v = [x,y]
 
 %Rede Neural
 
-net = feedforwardnet(20,'trainlm');
-net = train(net,x,y);
+%Feedforward Neural Network
+
+net = feedforwardnet(40,'trainlm');
+[net,~] = train(net,x,y);
+[net,~] = train(net,x,y);
+[net,~] = train(net,x,y);
+[net,~] = train(net,x,y);
+[net,tr] = train(net,x,y);
