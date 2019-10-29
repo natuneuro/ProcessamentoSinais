@@ -1,5 +1,10 @@
-# Não sincronizar arquivos de EEG
+# Não sincronizar arquivos de EEG, lbl, tse, e txt
 *.edf
+*.tse
+*.tse_bi
+*.lbl
+*.lbl_bi
+*.txt
 
 # Windows default autosave extension
 *.asv

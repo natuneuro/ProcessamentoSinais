@@ -24,6 +24,7 @@ s_n = filter(b,a,s_n);
 
 figure
 subplot(211)
+
 plot(t_e,s_e)
 xlabel('Tempo(s)')
 ylabel('Amplitude(uV)')
