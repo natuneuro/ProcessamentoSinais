@@ -1,22 +1,28 @@
-function sinal_dividido = DividirSinal(sinal_EEG)
-    
+function sinal_dividido = DividirSinal(sinal, tamanho_do_corte, frequencia_sinal)
     %Deseja-se dividir o sinal em partes de 2 a 3 segundos, para isso é
     %necessário saber a frequencia de amostragem para poder dividir o sinal
     %corretamente
     
-    signal_length = length(sinal_EEG); %Comprimento do sinal
-    sampling_frequency = 250; %Frequência de amostragem do sinal
-    n_amostras_3s = 3/(1/sampling_frequency); %Numero de amostras para 3s
+    comprimento_sinal = length(sinal);
+    numero_amostras_por_segundo = tamanho_do_corte/(1/frequencia_sinal);
     
-    n = signal_length/n_amostras_3s; %Numero de subvetores
+    quantidade_intervalos = ceil(comprimento_sinal/numero_amostras_por_segundo);
     
-    s_d = zeros(n,n_amostras_3s + 1);
+    inicio = 1;
+    final = numero_amostras_por_segundo;
     
-    for i=1:n
-        s_d(i,1:(n_amostras_3s + 1)) = sinal_EEG(1:(n_amostras + 1));
-        sinal_EEG = sinal_EEG(n_amostras + 1:signal_length);
-    end
+    % O sinal dividido sera uma celula, isto, um array de arrays
+    sinal_dividido = cell(1, quantidade_intervalos);
+    sinal_dividido{1} = sinal(inicio:final);
 
-    sinal_dividido = s_d;
-    
+    for i=2:quantidade_intervalos
+        inicio = final + 1;
+        final = i * numero_amostras_por_segundo;
+        
+        if(final > comprimento_sinal)
+            sinal_dividido{i} = sinal(inicio:end);
+        else
+            sinal_dividido{i} = sinal(inicio:final);
+        end
+    end
 end
