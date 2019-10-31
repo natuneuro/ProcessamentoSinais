@@ -1,5 +1,3 @@
-'main';
-
 [header_sinal, sinal, path, nome_arquivo] = ImportarArquivoEDF();
 
 nome_arquivo = strrep(nome_arquivo, '.edf', '.tse');
@@ -42,5 +40,8 @@ subplot(2, 1, 2)
 plot(tempo, sinal_com_t_r_f_normalizado, 'm', 'linew', 2);
 title('Sinal EEG com viés removido, filtrado e normalizado')
 
+%% Dividisão do sinal
+
+sinal_dividido = DividirSinal(sinal_com_tendencia_removida_filtrado, 3, )
 
 
