@@ -20,7 +20,7 @@ function [eventos] = ImportarArquivoTSE(caminho_arquivo)
     
     quantidade_eventos = length(conteudo{1}(:));
     
-    eventos = {};
+    eventos = cell(1, quantidade_eventos);
     
     for i = 1:quantidade_eventos
         evento.inicio = conteudo{1}(i);
@@ -28,7 +28,7 @@ function [eventos] = ImportarArquivoTSE(caminho_arquivo)
         evento.tipo = conteudo{3}{i};
         evento.probabilidade = conteudo{4}(i);
         
-        eventos = [eventos evento];
+        eventos{i} = evento;
     end
 end
 
