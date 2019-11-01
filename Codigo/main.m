@@ -1,3 +1,5 @@
+%% Leitura e filtragem
+
 [header_sinal, sinal, path, nome_arquivo] = ImportarArquivoEDF();
 
 nome_arquivo = strrep(nome_arquivo, '.edf', '.tse');
@@ -15,7 +17,14 @@ tempo = 1/Fs:1/Fs:tamanho_sinal/Fs;
 
 %% Divisão do sinal
 
-sinal_dividido = DividirSinal(sinal_filtrado, 3, header_sinal.frequency(1));
+sinal_dividido = DividirSinal(sinal_associado.sinal(1,1:tamanho_sinal), 3, header_sinal.frequency(1));
 trechos_sinal_associados = AssociarTrechosDeSinalComTipoDeEvento(sinal_dividido, sinal_associado.eventos);
+
+%% Aplicação de Wavelet e obtenção de caracteristicas do sinal
+
+caracteristicas_do_sinal = ObterCaracteristicasDoSinal(sinal_associado.sinal(1,1:tamanho_sinal));
+
+
+
 
 
