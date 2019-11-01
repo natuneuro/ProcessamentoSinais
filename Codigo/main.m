@@ -6,7 +6,7 @@ nome_arquivo = strrep(nome_arquivo, '.edf', '.tse');
 caminho_arquivo_tse = strcat(path, nome_arquivo);
 
 eventos = ImportarArquivoTSE(caminho_arquivo_tse);
-sinal_associado = AssociarSinalEEGComEventos(header_sinal, sinal, eventos);
+sinal_associado = SinalEEG(header_sinal, sinal, eventos);
 
 tamanho_sinal = length(sinal_associado.sinal(1,:));
 
@@ -22,7 +22,7 @@ trechos_sinal_associados = AssociarTrechosDeSinalComTipoDeEvento(sinal_dividido,
 
 %% Aplicação de Wavelet e obtenção de caracteristicas do sinal
 
-caracteristicas_do_sinal = ObterCaracteristicasDoSinal(sinal_associado.sinal(1,1:tamanho_sinal));
+caracteristicas_do_sinal = ObterCaracteristicasDoSinal(trechos_sinal_associados);
 
 
 

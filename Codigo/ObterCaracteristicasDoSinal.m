@@ -10,7 +10,7 @@ function caracteristicas_do_sinal = ObterCaracteristicasDoSinal(sinalEEG)
     caracteristicas_do_sinal = cell(1, length(sinalEEG));
 
     for i=1:length(sinalEEG)
-        [cd1,cd2,cd3,cd4,cd5, ca5] = ObterFaixasWavelet(sinalEEG{i});
+        [cd1,cd2,cd3,cd4,cd5, ca5] = ObterFaixasWavelet(sinalEEG{i}.sinal);
 
         s_std = std([std(cd1) std(cd2) std(cd3) std(cd4) std(cd5) std(ca5)]);
         s_mean = mean([mean(cd1) mean(cd2) mean(cd3) mean(cd4) mean(cd5) mean(ca5)]);

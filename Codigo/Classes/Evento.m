@@ -8,6 +8,15 @@ classdef Evento
     end
 
     methods
+        % construtor da classe
+        function this = Evento(inicio, fim, tipo, probabilidade)
+            if (nargin == 4)
+                this.inicio = inicio;
+                this.fim = fim;
+                this.tipo = tipo;
+                this.probabilidade = probabilidade;
+            end
+        end
     end
 
 end
