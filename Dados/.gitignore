@@ -1,0 +1,7 @@
+# Não sincronizar arquivos de EEG, lbl, tse, e txt
+*.edf
+*.tse
+*.tse_bi
+*.lbl
+*.lbl_bi
+*.txt
