@@ -5,15 +5,15 @@ function [ resultado_rede ] = TreinamentoRedeNeural(entradas, saidas)
 %
 %   This script assumes these variables are defined:
 
-    x = entrada;
-    t = saida;
+    x = entradas;
+    t = saidas;
 
 %   Choose a Training Function
 %   For a list of all training functions type: help nntrain
 %   'trainlm' is usually fastest.
 %   'trainbr' takes longer but may be better for challenging problems.
 %   'trainscg' uses less memory. Suitable in low memory situations.
-    trainFcn = 'trainscg';  % Scaled conjugate gradient backpropagation.
+    trainFcn = 'trainbr';  % Scaled conjugate gradient backpropagation.
 
 %   Create a Pattern Recognition Network
     hiddenLayerSize = 10;
