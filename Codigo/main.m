@@ -28,7 +28,7 @@ caracteristicas_do_sinal = cell2mat(caracteristicas_do_sinal);
 %% Treinamento
 
 saida_cada_trecho = [ trechos_sinal_associados{:} ];
-saida_cada_trecho = [ saida_cada_trecho(:).ocorre_convulsao ]; 
+saida_cada_trecho = [ saida_cada_trecho(:).ocorre_convulsao ];
 
 resultado_rede = TreinamentoRedeNeural(caracteristicas_do_sinal, saida_cada_trecho);
 

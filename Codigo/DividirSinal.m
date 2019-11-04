@@ -35,7 +35,7 @@ function sinal_dividido = DividirSinal(sinal, tamanho_do_corte, frequencia_sinal
             
             sinal_dividido{i} = trecho_sinal;
         else
-            trecho_sinal.sinal = sinal(inicio:end);
+            trecho_sinal.sinal = sinal(inicio:final);
             trecho_sinal.tempo_inicio = inicio * (1/frequencia_sinal);
             trecho_sinal.tempo_final = final * (1/frequencia_sinal);
             
