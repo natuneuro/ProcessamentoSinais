@@ -45,5 +45,7 @@ function [ resultado_rede ] = TreinamentoRedeNeural(entradas, saidas)
     figure, ploterrhist(e)
     figure, plotconfusion(t,y)
     figure, plotroc(t,y)
+    
+    resultado_rede = net;
 end
 

@@ -5,12 +5,12 @@ function [ ocorre_convulsao ] = VerificarTrechoSinalOcorreConvulsao(trecho_sinal
         (trecho_sinal.tempo_final > evento.inicio && trecho_sinal.tempo_final < evento.fim))
         
         for i = 1:length(lista_tipos_convulsao)
-        ocorre_convulsao = strcmp(lista_tipos_convulsao{1}, evento.tipo);
-        
-        if ocorre_convulsao
-            break;
+            ocorre_convulsao = strcmp(lista_tipos_convulsao(i), evento.tipo);
+
+            if ocorre_convulsao
+                break;
+            end
         end
-    end
     else
         ocorre_convulsao = false;
     end
