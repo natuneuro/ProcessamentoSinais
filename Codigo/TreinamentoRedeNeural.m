@@ -13,10 +13,10 @@ function [ resultado_rede ] = TreinamentoRedeNeural(entradas, saidas)
 %   'trainlm' is usually fastest.
 %   'trainbr' takes longer but may be better for challenging problems.
 %   'trainscg' uses less memory. Suitable in low memory situations.
-    trainFcn = 'trainbr';  % Scaled conjugate gradient backpropagation.
+    trainFcn = 'trainscg';  % Scaled conjugate gradient backpropagation.
 
 %   Create a Pattern Recognition Network
-    hiddenLayerSize = 10;
+    hiddenLayerSize = 68;
     net = patternnet(hiddenLayerSize, trainFcn);
 
 %   Setup Division of Data for Training, Validation, Testing
