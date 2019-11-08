@@ -2,7 +2,7 @@ function [ modelo_svm ] = TreinamentoSVM(entradas, saidas)
 %   Utiliza a ferramenta de treinamento de uma Support Vector Machine
 %   Linear. Retorna o objeto matlab referente ao modelo treinado
     
-    indices = crossvalind('KFold', length(entradas), 10);
+    indices = crossvalind('KFold', size(entradas, 2), 10);
     
     performance_cada_fold = cell(1, 10);
     
