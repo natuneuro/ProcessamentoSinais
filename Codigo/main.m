@@ -36,4 +36,10 @@ resultado_rede = TreinamentoRedeNeural(caracteristicas_do_sinal, saida_cada_trec
 
 TreinamentoSVM(caracteristicas_do_sinal, saida_cada_trecho);
 
+%% Treinamento Deep Learning
+
+
+
+
+
 
