@@ -10,6 +10,6 @@ function [ rede ] = TreinamentoDeepLearning(entradas, saidas)
               softmaxLayer
               classificationLayer];
 
-
+    options = trainingOptions('sgdm');
 end
 

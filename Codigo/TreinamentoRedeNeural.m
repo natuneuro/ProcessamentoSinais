@@ -40,9 +40,9 @@ function [ resultado_rede ] = TreinamentoRedeNeural(entradas, saidas)
 
 %   Plots
 %   Uncomment these lines to enable various plots.
-    figure, plotperform(tr)
-    figure, plottrainstate(tr)
-    figure, ploterrhist(e)
+%   figure, plotperform(tr)
+%   figure, plottrainstate(tr)
+%   figure, ploterrhist(e)
     figure, plotconfusion(t,y)
     figure, plotroc(t,y)
     
