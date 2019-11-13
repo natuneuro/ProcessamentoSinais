@@ -27,5 +27,6 @@ function [eventos] = ImportarArquivoTSE(caminho_arquivo)
         
         eventos{i} = evento;
     end
+    fclose(arquivoID);
 end
 
