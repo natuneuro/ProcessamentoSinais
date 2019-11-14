@@ -13,8 +13,7 @@ Esta pasta estará dividida em 3 subpastas, onde teremos os códigos em python e
 * [Partes do código](#partes-do-codigo)
 
 ## Resumos do codigo
-
-(*** need to complete this part ***)
+Para a realização deste código, tivemos como base o seguinte artigo: [name]. Nele ....
 
 
 ## Partes do codigo
@@ -35,7 +34,10 @@ Esta pasta estará dividida em 3 subpastas, onde teremos os códigos em python e
 
 
 # SVM
+Isso pertence ao algoritmo do tipo de classificação. O algoritmo irá separar os pontos de dados usando uma linha. Esta linha é escolhida de tal forma que será mais importante dos pontos de dados mais próximos em 2 categorias.
+O SMV é um algoritmo de classificação binária. Dado um conjunto de pontos de 2 tipos no lugar N dimensional, SMV gera um hiperlane dimensional (N-1) para separar esses pontos em 2 grupos. Digamos que você tenha alguns pontos de 2 tipos em um papel que são linearmente separáveis. O SMV encontrará uma linha recta que separa esses pontos em 2 tipos e está localizada o mais longe possível de todos esses pontos.
 
+Em termos de escala, alguns dos maiores problemas que foram resolvidos usando SMVs (com implementações adequadamente modificadas) são exibições publicitárias, reconhecimento de site de splice humano, detecção de gênero baseada em imagem, classificação de imagem em larga escala, etc.
 
 # Resultados
 
