@@ -1,6 +1,8 @@
-# Automated Epileptic Seizure Onset Detection
+# SVM + Análise cepstral
 
-Implementação do algoritmo presente em Automated Epileptic Seizure Onset Detection. Para tal iremos utilizar os mesmos arquivos de entrada já presentes em outros algoritmos da pasta.
 
-O algoritmo está sendo realizado em Matlab, sendo possível uma versão em python no futuro.
+O código aqui presente tem como objetivo unir os conhecimentos de SVM e análise ceptral para a identificação de quadros de epilepsia e posteriormente buscar uma forma de prefer que vá ocorrer.
+
+
+Esta pasta estará dividida em 3 subpastas, onde teremos os códigos em python e matlab. Para as versões em python será apresentado um jupyter notebook contendo o passo a passo de como foi realizado.
 
