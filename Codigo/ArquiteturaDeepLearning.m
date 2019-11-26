@@ -31,7 +31,7 @@ saida_rede = categorical(saida_rede);
 
 %% Treinamento
 
-rede_treinada = TreinamentoDeepLearning(entradas_rede, saida_rede);
+rede_treinada = TreinamentoDeepLearning(entradas_rede, saida_rede, layers_2);
 
 entradas_teste = horzcat(sinais_seizure_teste, sinais_normais_O_teste, sinais_normais_Z_teste);
 
