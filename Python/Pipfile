@@ -8,6 +8,8 @@ rope = "*"
 
 [packages]
 pyedflib = "*"
+numpy = "*"
+mypy = "*"
 
 [requires]
 python_version = "3.7"
