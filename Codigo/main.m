@@ -15,12 +15,12 @@ tamanho_sinal = length(sinal_associado.sinal(1,:));
 Fs = header_sinal.frequency(1);
 tempo = 1/Fs:1/Fs:tamanho_sinal/Fs;
 
-%% Divis„o do sinal
+%% Divis√£o do sinal
 
 sinal_dividido = DividirSinal(sinal_associado.sinal(1,1:tamanho_sinal), 3, header_sinal.frequency(1));
 trechos_sinal_associados = AssociarTrechosDeSinalComTipoDeEvento(sinal_dividido, sinal_associado.eventos);
 
-%% AplicaÁ„o de Wavelet e obtenÁ„o de caracteristicas do sinal (entrada) e as respectivas saidas
+%% Aplica√ß√£o de Wavelet e obten√ß√£o de caracteristicas do sinal (entrada) e as respectivas saidas
 
 caracteristicas_do_sinal = ObterCaracteristicasDoSinal(trechos_sinal_associados);
 caracteristicas_do_sinal = cell2mat(caracteristicas_do_sinal);
@@ -28,9 +28,6 @@ caracteristicas_do_sinal = cell2mat(caracteristicas_do_sinal);
 saida_cada_trecho = [ trechos_sinal_associados{:} ];
 saida_cada_trecho = [ saida_cada_trecho(:).ocorre_convulsao ];
 
-%% Treinamento Rede Neural
-
-resultado_rede = TreinamentoRedeNeural(caracteristicas_do_sinal, saida_cada_trecho);
 
 %% Treinamento SVM
 
