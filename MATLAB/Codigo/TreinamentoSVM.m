@@ -30,7 +30,7 @@ function [ modelo_svm ] = TreinamentoSVM(entradas, saidas)
     [valor, indice] = max([vetor_structs.auc]);
     
     plotconfusion(performance_cada_fold{indice}.resultado_esperado, performance_cada_fold{indice}.resultados_teste);
-    figure; plot(performance_cada_fold{indice}.roc_x, performance_cada_fold{indice}.roc_y);
+    figure; plot(vetor_structs.roc_x, vetor_structs.roc_y);
     xlabel('False positive rate');
     ylabel('True positive rate');
     title('ROC of the best SVM model trained');
