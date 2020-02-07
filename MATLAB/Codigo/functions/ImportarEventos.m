@@ -1,4 +1,4 @@
-function [eventos] = ImportarArquivoTSE(caminho_arquivo)
+function [eventos] = ImportarEventos(caminho_arquivo)
 %   Lê os arquivo .tse e retorna uma struct com as respectivas
 %   informações:
 %   - Nome do evento(vide documento explicando as bases de dados)
