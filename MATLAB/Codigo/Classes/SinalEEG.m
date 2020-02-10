@@ -64,7 +64,22 @@ classdef SinalEEG
         end
         
         function sinal_filtrado = DecomporSinalEmFaixaDeFrequencia(this, faixa_de_frequencia)
-            sinal_filtrado = bandpass(values(this.canais), faixa_de_frequencia, this.frequencia_de_amostragem);
+            sinal_a_ser_filtrado = transpose(values(this.canais));
+            sinal_a_ser_filtrado = transpose(cell2mat(sinal_a_ser_filtrado));
+            
+            sinal_filtrado = transpose(bandpass(sinal_a_ser_filtrado, faixa_de_frequencia, this.frequencia_de_amostragem));
+        end
+        
+        function AtribuirSinaisDasFrequenciasDeInteresse(this, sinal_delta_theta, sinal_alpha_beta, sinal_gama)
+            labels_canais = keys(this.canais);
+            i = 1;
+            
+            for label = labels_canais
+                this.canais_delta_theta(label) = sinal_delta_theta(i, :);
+                this.canais_alpha_beta(label) = sinal_alpha_beta(i, :);
+                this.canais_gama(label) = sinal_gama(i, :);
+                i = i + 1;
+            end
         end
     end
     

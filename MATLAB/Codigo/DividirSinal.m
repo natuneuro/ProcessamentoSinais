@@ -1,13 +1,13 @@
 function sinal_dividido = DividirSinal(sinal, tamanho_do_corte, frequencia_sinal)
-%   Deseja-se dividir o sinal em partes de 2 a 3 segundos, para isso é
-%   necessário saber a frequencia de amostragem para poder dividir o sinal
-%   corretamente
+%   Deseja-se dividir o sinal em partes que depende de tamanho_do_corte 
+%   (segundos), para isso é necessário saber a frequencia de amostragem 
+%   para poder dividir o sinal corretamente.
 %   Cada item do sinal dividido é uma struct com:
 %   - Sinal
 %   - Tempo de Inicio (em segundos)
 %   - Tempo de Fim (em segundos)
 
-    comprimento_sinal = length(sinal);
+    comprimento_sinal = size(sinal, 2);
     numero_amostras_por_tempo = tamanho_do_corte/(1/frequencia_sinal);
     
     quantidade_intervalos = ceil(comprimento_sinal/numero_amostras_por_tempo);
@@ -18,7 +18,7 @@ function sinal_dividido = DividirSinal(sinal, tamanho_do_corte, frequencia_sinal
     % O sinal dividido sera uma celula, isto, um array de arrays
     sinal_dividido = cell(1, quantidade_intervalos);
     
-    trecho_sinal.sinal = sinal(inicio:final);
+    trecho_sinal.sinal = sinal(:, inicio:final);
     trecho_sinal.tempo_inicio = 0;
     trecho_sinal.tempo_final = numero_amostras_por_tempo * (1/frequencia_sinal);
     
@@ -29,13 +29,13 @@ function sinal_dividido = DividirSinal(sinal, tamanho_do_corte, frequencia_sinal
         final = i * numero_amostras_por_tempo;
         
         if(final > comprimento_sinal)
-            trecho_sinal.sinal = sinal(inicio:end);
+            trecho_sinal.sinal = sinal(:, inicio:end);
             trecho_sinal.tempo_inicio = inicio * (1/frequencia_sinal);
-            trecho_sinal.tempo_final = length(sinal) * (1/frequencia_sinal);
+            trecho_sinal.tempo_final = size(sinal, 2) * (1/frequencia_sinal);
             
             sinal_dividido{i} = trecho_sinal;
         else
-            trecho_sinal.sinal = sinal(inicio:final);
+            trecho_sinal.sinal = sinal(:, inicio:final);
             trecho_sinal.tempo_inicio = inicio * (1/frequencia_sinal);
             trecho_sinal.tempo_final = final * (1/frequencia_sinal);
             
