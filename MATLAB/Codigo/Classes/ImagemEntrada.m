@@ -17,9 +17,9 @@ classdef ImagemEntrada
         function this = ImagemEntrada(sinal_delta_theta, sinal_alpha_beta, sinal_gama, inicio_amostra, fim_amostra)
             % Construtor da classe
             
-            this.imagem_delta_theta = sinal_delta_theta;
-            this.imagem_alpha_beta = sinal_alpha_beta;
-            this.imagem_gama = sinal_gama;
+            this.imagem_delta_theta = sinal_delta_theta.sinal;
+            this.imagem_alpha_beta = sinal_alpha_beta.sinal;
+            this.imagem_gama = sinal_gama.sinal;
             this.inicio_amostra = inicio_amostra;
             this.fim_amostra = fim_amostra;
         end
