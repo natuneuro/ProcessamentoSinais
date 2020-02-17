@@ -1,18 +1,18 @@
 classdef SinalEEG
 %   Estrutura de dados que representa o sinal do EEG, junto com 
-%   informações importantes
+%   informações importantes.
     
     properties
-        header_edf
-        frequencia_de_amostragem
+        header_edf % Cabecalho de informacoes do EEG
+        frequencia_de_amostragem 
         sinal
-        eventos
+        eventos % Struct que contem a informacao do nome do evento e o intervalo de inicio e fim
          
-         canais_delta_theta
-         canais_alpha_beta
-         canais_gama
+        canais_delta_theta % Dicionario que possui o sinal com os 21 canais do padrao 10-20 com frequencias amostradas na faixa de [1 - 7Hz]
+        canais_alpha_beta % Dicionario que possui o sinal com os 21 canais do padrao 10-20 com frequencias amostradas na faixa de [8 - 30Hz]
+        canais_gama % Dicionario que possui o sinal com os 21 canais do padrao 10-20 com frequencias amostradas na faixa de [31 - 100Hz]
 
-         canais
+        canais % Dicionario com os 21 canais do padrao 10-20
     end
     
     methods
@@ -49,6 +49,10 @@ classdef SinalEEG
         end
         
         function CarregarSinalDeCadaCanal(this)
+        % Funcao que verifica a existencia de cada canal e atribui no 
+        % dicionario de canais todos os canais do padrao 10-20 a partir 
+        % dos canais presentes no exame
+            
             canais_presentes_no_sinal = this.header_edf.label;
             nomes_canais = keys(this.canais);
             
@@ -72,7 +76,8 @@ classdef SinalEEG
             sinal_filtrado = transpose(bandpass(sinal_a_ser_filtrado, faixa_de_frequencia, this.frequencia_de_amostragem));
         end
         
-        function AtribuirSinaisDasFrequenciasDeInteresse(this, sinal_delta_theta, sinal_alpha_beta, sinal_gama)
+        function AtribuirSinaisDasFrequenciasDeInteresse(this, sinal_delta_theta, sinal_alpha_beta, sinal_gama)    
+            
             labels_canais = keys(this.canais);           
             
             for i = 1:size(labels_canais, 2)

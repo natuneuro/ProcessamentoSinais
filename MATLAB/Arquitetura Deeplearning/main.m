@@ -18,14 +18,17 @@ delta_theta = [1 7];
 alpha_beta = [8 30];
 gama = [31 100];
 
+% Decompoe-se em 3 faixas de frequencia os 21 canais do EEG
 sinal_delta_theta = sinal_associado.DecomporSinalEmFaixaDeFrequencia(delta_theta);
 sinal_alpha_beta = sinal_associado.DecomporSinalEmFaixaDeFrequencia(alpha_beta);
 sinal_gama = sinal_associado.DecomporSinalEmFaixaDeFrequencia(gama);
 
+% Atribui os sinais decompostos no objeto 'sinal_associado'
 sinal_associado.AtribuirSinaisDasFrequenciasDeInteresse(sinal_delta_theta, sinal_alpha_beta, sinal_gama);
 
 %% Divisao do sinal
 
+% Divide-se o sinal em faixas de intervalos
 tamanho_corte = 3; % segundos
 
 sinais_divididos_delta_theta = DividirSinal(sinal_delta_theta, tamanho_corte, Fs);
@@ -34,6 +37,9 @@ sinais_divididos_gama = DividirSinal(sinal_gama, tamanho_corte, Fs);
 
 %% Cria imagens para serem usadas de entrada
 
+% Os intervalos do sinal dividido sao abstraidos como imagens, como se as
+% faixas de frequencia delta_theta, alpha_beta e gama fossem o Red, green e
+% blue das imagens RGB.
 imagens_entrada = CriarImagensEntrada(sinais_divididos_delta_theta, sinais_divididos_alpha_beta, sinais_divididos_gama);
 imagens_entrada = AssociarTrechosDeSinalComTipoDeEvento(imagens_entrada, eventos);
 
@@ -54,6 +60,13 @@ camadas_da_rede = [
 
 %% Normalizacao das imagens para serem utilizadas no treinamento
 
+% A ideia deste trecho de codigo é adequar as "imagens", que possuem 2 
+% dimensoes para serem ingressadas na rede convolucional do matlab, com o 
+% formato (h, w, c, N), que é especificado da seguinte forma:
+% - h: Altura da imagem
+% - w: Largura da imagem
+% - c: Numero de canais (no caso, 3)
+% - N: Quantidade de itens
 clear imagens imagens_entrada_normalizadas;
 
 imagens = [ imagens_entrada{:} ];
@@ -68,10 +81,21 @@ for i = 1:size(imagens, 2)
     imagens_entrada_normalizadas(:, 1:size(imagens(i).imagem_gama, 2), 3, i) = imagens(i).imagem_gama;
 end
 
-%% Ajuste da dimensão das imagens, usando metodo do padding zero
+%% Ajuste da dimensão das imagens, usando metodo do zero padding
 
+% Neste trecho de codigo, as imagens tem seu tamanho reajustado a fim de se
+% adequar ao tamanho de entrada da rede convolucional alexnet, que é de
+% 227x227, enquanto que a entrada das imagens (ate o momento) é de 
+% [21]x[Frequência de amostragem * tamanho_corte]
+
+% A imagem é redimensionada na horizontal, resultando em um tamanho de 
+% 21x227
 imagens_entrada_normalizadas = imresize(imagens_entrada_normalizadas, [21 tamanho_entrada(1)]);
 
+
+% No restante do trecho de codigo, é aplicado um metodo chamado de
+% zero padding, que preenche a imagem até uma determinada dimensao,
+% fazendo com que o tamanho de 227x227, que é o tamanho da alexnet
 tamanho_imagens_entrada_normalizadas = size(imagens_entrada_normalizadas);
 tamanho_maximo_imagem = max(tamanho_imagens_entrada_normalizadas(1:2));
 
@@ -103,6 +127,8 @@ saida_real_teste = saida_real(indice_validacao+1:end);
 
 %% Treinamento da Rede Convolucional
 
+% As opcoes selecionadas foram escolhidas como esta no tutorial do matlab.
+% Elas podem ser ajustadas conforme a que produzir melhor resultado
 miniBatchSize = 10;
 options = trainingOptions('sgdm', ...
     'MiniBatchSize',miniBatchSize, ...
@@ -113,6 +139,7 @@ options = trainingOptions('sgdm', ...
     'ValidationData',{imagens_entrada_validacao, categorical(saida_real_validacao)},...
     'Plots','training-progress');
 
+% Treinamento da rede
 rede_treinada = trainNetwork(imagens_entrada_treinamento, ...
        categorical(saida_real_treinamento), camadas_da_rede, options);
 

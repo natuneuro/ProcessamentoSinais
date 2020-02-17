@@ -6,6 +6,8 @@ function [eventos] = ImportarEventos(caminho_arquivo)
 %   - Fim
 %   - Probabilidade de ter ocorrido (padrão é 1)
 
+    % Verifica a existencia do caminho do arquivo, caso nao exista, a
+    % pessoa tera que informar o local dele
     if(not(exist('caminho_arquivo')) || isempty(caminho_arquivo))
         [arquivo, path] = uigetfile('*.tse', 'Selecionar arquivo TSE');
         caminho_arquivo = strcat(path, arquivo);        
@@ -16,6 +18,8 @@ function [eventos] = ImportarEventos(caminho_arquivo)
         error(msg_erro)
     end
     
+    % O arquivo do format .TSE é lido conforme a documentacao dos dados
+    % especifica
     conteudo = textscan(arquivoID, '%f %f %s %f', 'headerlines', 2);
     
     quantidade_eventos = length(conteudo{1}(:));
