@@ -1,4 +1,4 @@
-%% Leitura e filtragem
+%% Leitura
 
 [header_sinal, sinal, path, nome_arquivo] = ImportarArquivoEDF();
 
