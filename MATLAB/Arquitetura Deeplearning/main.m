@@ -149,6 +149,7 @@ saida_resultante_da_rede = predict(rede_treinada, imagens_entrada_teste);
 
 saida_resultante_da_rede = transpose(double(saida_resultante_da_rede(:,1) < saida_resultante_da_rede(:,2)));
 
+set(gcf, 'color', 'w');
 matriz_confusao = plotconfusion(saida_real_teste, saida_resultante_da_rede, "Rede convolucional treinada (1 - ocorre convulsao, 0 - nao ocorre)");
 
 
