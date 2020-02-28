@@ -2,6 +2,8 @@ from pyedflib import edfreader
 
 
 class SinalEEG(object):
+    frequencia_de_amostragem: int
+
     canais = {"Fp1": [], "Fp2": [], "F7": [],
               "F3": [], "Fz": [], "F4": [],
               "F8": [], "A1": [], "T3": [],
@@ -13,6 +15,8 @@ class SinalEEG(object):
     def __init__(self, sinal_arquivo_edf: edfreader.EdfReader):
         canais_no_sinal = sinal_arquivo_edf.getSignalLabels()
         labels = list(self.canais.keys())
+
+        self.frequencia_de_amostragem = sinal_arquivo_edf.getSampleFrequency(0)
 
         for i in range(len(canais_no_sinal)):
             # Obtenho o sinal inteiro do respectivo canal iterado
@@ -28,5 +32,6 @@ class SinalEEG(object):
             # Se ele existe, atribui o sinal no dicionario com o indice respectivo do canal, caso contrario, printa um erro
             if canal_a_ser_salvo is not None:
                 self.canais[canal_a_ser_salvo] = sinal_do_canal
-            else:
-                print("label_do_canal ", label_do_canal, " inexistente")
+
+    def decomporSinalEmFaixaDeFrequencia(self, faixa_de_frequencia):
+        pass
