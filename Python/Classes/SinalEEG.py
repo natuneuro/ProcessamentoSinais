@@ -1,4 +1,6 @@
 from pyedflib import edfreader
+import numpy as np
+from Modulos import ProcessamentoDoSinal
 
 
 class SinalEEG(object):
