@@ -1,4 +1,4 @@
-from scipy.signal import butter, lfilter, freqz
+from scipy.signal import butter, freqz, filtfilt
 import numpy as np
 
 
@@ -12,5 +12,5 @@ def butter_bandpass(lowcut, highcut, fs, order):
 
 def butter_bandpass_filter(data, lowcut, highcut, fs, order=9):
     b, a = butter_bandpass(lowcut, highcut, fs, order=order)
-    y = lfilter(b, a, data)
+    y = filtfilt(b, a, data)
     return y
