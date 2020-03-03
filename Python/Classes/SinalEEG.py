@@ -14,6 +14,14 @@ class SinalEEG(object):
               "P3": [], "Pz": [], "P4": [],
               "T6": [], "O1": [], "O2": []}
 
+    Fs = {"Fp1": [], "Fp2": [], "F7": [],
+          "F3": [], "Fz": [], "F4": [],
+          "F8": [], "A1": [], "T3": [],
+          "C3": [], "Cz": [], "C4": [],
+          "T4": [], "A2": [], "T5": [],
+          "P3": [], "Pz": [], "P4": [],
+          "T6": [], "O1": [], "O2": []}
+
     def __init__(self, sinal_arquivo_edf: edfreader.EdfReader):
         canais_no_sinal = sinal_arquivo_edf.getSignalLabels()
         labels = list(self.canais.keys())
@@ -34,6 +42,7 @@ class SinalEEG(object):
             # Se ele existe, atribui o sinal no dicionario com o indice respectivo do canal, caso contrario, printa um erro
             if canal_a_ser_salvo is not None:
                 self.canais[canal_a_ser_salvo] = sinal_do_canal
+                self.Fs[canal_a_ser_salvo] = sinal_arquivo_edf.getSampleFrequency(i)
 
     def decomporSinalEmFaixaDeFrequencia(self, faixa_de_frequencia):
         valores_dos_canais = np.array(self.canais.values())
