@@ -1,4 +1,6 @@
 from pyedflib import edfreader
+import numpy as np
+from Modulos import ProcessamentoDoSinal
 
 
 class SinalEEG(object):
@@ -34,4 +36,8 @@ class SinalEEG(object):
                 self.canais[canal_a_ser_salvo] = sinal_do_canal
 
     def decomporSinalEmFaixaDeFrequencia(self, faixa_de_frequencia):
-        pass
+        valores_dos_canais = np.array(self.canais.values())
+        sinal_decomposto = ProcessamentoDoSinal.butter_bandpass_filter(
+            valores_dos_canais, faixa_de_frequencia[0], faixa_de_frequencia[1], self.frequencia_de_amostragem)
+
+        return sinal_decomposto
