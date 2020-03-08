@@ -8,15 +8,23 @@ import numpy as np
 # Organizar a rede como uma classe e criar modulo para treinar
 
 # Configurando as camadas
-model = tf.keras.Sequential()
-model.add(layers.Dense(20, activation='sigmoid'))
-model.add(layers.Dense(10))
+model = tf.keras.Sequential([
+    layers.Dense(20, activation='sigmoid'),
+    layers.Dense(2)])
 
 # Configurando o treinamento
-model.compile(optimizer=tf.keras.optimizers.SGD(0.01), loss='binary_crossentropy', metrics='Accuracy')
+model.compile(optimizer=tf.keras.optimizers.SGD(0.01, 0.9),
+              loss=tf.keras.losses.MeanSquaredError(),
+              metrics=['accuracy'])
 
 # Treinando a rede
-data = np.random.random((1000, 32))
+data = np.random.randint(101, size=(1000, 5))
 labels = np.random.random((1000, 1))
 
-model.fit(data, labels, epochs=10, batch_size=32)
+val_data = np.random.randint(101, size=(100, 5))
+val_labels = np.random.random((100, 1))
+
+hist = model.fit(data, labels, epochs=1000, batch_size=128, validation_data=(val_data, val_labels))
+
+# Acurácia média
+print(np.mean(hist.history['accuracy']))
