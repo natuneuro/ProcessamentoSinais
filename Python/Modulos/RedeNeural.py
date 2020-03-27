@@ -7,24 +7,33 @@ import numpy as np
 # Criar rede feedforward semelhante à utilizada no código em matlab
 # Organizar a rede como uma classe e criar modulo para treinar
 
-# Configurando as camadas
-model = tf.keras.Sequential([
-    layers.Dense(20, activation='sigmoid'),
-    layers.Dense(2)])
 
-# Configurando o treinamento
-model.compile(optimizer=tf.keras.optimizers.SGD(0.01, 0.9),
-              loss=tf.keras.losses.MeanSquaredError(),
-              metrics=['accuracy'])
+def treinamento_rna(features, outputs):
 
-# Treinando a rede
-data = np.random.randint(101, size=(1000, 5))
-labels = np.random.random((1000, 1))
+    # Configurando as camadas
 
-val_data = np.random.randint(101, size=(100, 5))
-val_labels = np.random.random((100, 1))
+    model = tf.keras.Sequential([
+        layers.Dense(10, activation='sigmoid'),
+        layers.Dense(2)])
 
-hist = model.fit(data, labels, epochs=1000, batch_size=128, validation_data=(val_data, val_labels))
+    # Configurando o treinamento
 
-# Acurácia média
-print(np.mean(hist.history['accuracy']))
+    model.compile(optimizer=tf.keras.optimizers.SGD(0.01, 0.9),
+                loss=tf.keras.losses.MeanSquaredError(),
+                metrics=['accuracy'])
+
+    # Treinando a rede
+
+    # data = np.random.randint(11, size=(1000, 4))
+    # labels = np.random.random((1000, 1))
+
+    # val_data = np.random.randint(11, size=(100, 4))
+    # val_labels = np.random.random((100, 1))
+
+    data = features
+    labels = outputs
+
+    hist = model.fit(data, labels, epochs=7000, batch_size=128)
+    mean_acc = np.mean(hist.history['accuracy'])
+
+    return mean_acc
