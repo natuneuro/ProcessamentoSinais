@@ -1,1 +1,1 @@
-# Processamento de Sinais Cerebrais para detecção de epilepsia
+# Projeto em Python utilizando Rede Neural
