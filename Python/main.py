@@ -43,12 +43,14 @@ for i in range(0, len(sinal_div)):
 
 # Teste PCA
 
-#feature_vec = preprocessing.scale(feature_vec)
-
 pca = PCA()
 pca.fit(feature_vec)
 pca_data = pca.transform(feature_vec)
 
+# Valor das PCs 1 e 2 para todos os trechos do sinal
+#print(pca_data[:,0:2])
+
+# PLotagem do gráfico de variância das PCs
 #per_var = np.round(pca.explained_variance_ratio_*100, decimals=1)
 #labels = ['PC' + str(x) for x in range (1,len(per_var)+1)]
 
@@ -58,9 +60,11 @@ pca_data = pca.transform(feature_vec)
 #plt.title('Scree Plot')
 #plt.show()
 
-#saidas_trechos = np.asarray(saidas_trechos)
+saidas_trechos_2 = np.asarray(saidas_trechos)
 
-rede = RedeNeural.treinamento_rna(feature_vec, saidas_trechos)
+rede = RedeNeural.treinamento_rna(pca_data[:,0:2], saidas_trechos_2)
+
+#rede = RedeNeural.treinamento_rna(feature_vec, saidas_trechos)
 
 # Utilizando outra base de dados para testar a rede (não tem um bom desempenho)
 

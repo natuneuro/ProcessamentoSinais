@@ -15,22 +15,22 @@ def treinamento_rna(data, labels):
     # Configurando as camadas
 
     model = tf.keras.Sequential([
-        layers.Dense(16, input_shape=(4,), activation='sigmoid'),
+        layers.Dense(20, input_shape=(2,), activation='sigmoid'),
         layers.Dense(2, activation='softmax')])
 
     model.summary()
 
     # Configurando o treinamento
 
-    model.compile(optimizer=tf.keras.optimizers.SGD(0.01, 0.9),
+    model.compile(optimizer=tf.keras.optimizers.SGD(learning_rate=0.01, momentum=0.9),
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
 
-    X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(data, labels, test_size=0.3, random_state=3)
+    X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(data, labels, test_size=0.3)
 
     # Treinando a rede e validando a rede
 
-    model.fit(X_train, y_train, validation_data=(X_test, y_test),batch_size=32, epochs=4000, shuffle=True, verbose=2)
+    model.fit(X_train, y_train, validation_data=(X_test, y_test),batch_size=32, epochs=6000, shuffle=True, verbose=2)
 
     # Plotando a matriz de confusão do treinamento/validação
 
