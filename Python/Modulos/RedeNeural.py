@@ -8,14 +8,13 @@ from sklearn.metrics import plot_confusion_matrix
 from sklearn.metrics import confusion_matrix
 import itertools
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 
 def treinamento_rna(data, labels):
     # Configurando as camadas
 
     model = tf.keras.Sequential([
-        layers.Dense(20, input_shape=(2,), activation='sigmoid'),
+        layers.Dense(16, input_shape=(7,), activation='sigmoid'),
         layers.Dense(2, activation='softmax')])
 
     model.summary()
@@ -30,7 +29,7 @@ def treinamento_rna(data, labels):
 
     # Treinando a rede e validando a rede
 
-    model.fit(X_train, y_train, validation_data=(X_test, y_test),batch_size=32, epochs=6000, shuffle=True, verbose=2)
+    model.fit(X_train, y_train, validation_data=(X_test, y_test),batch_size=32, epochs=7000, shuffle=True, verbose=2)
 
     # Matriz de confusão
 

@@ -8,7 +8,7 @@ rope = "*"
 
 [packages]
 pyedflib = "*"
-numpy = "*"
+numpy = "~=1.18.4"
 mypy = "*"
 scipy = "*"
 matplotlib = "*"

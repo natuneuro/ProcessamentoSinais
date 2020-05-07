@@ -4,12 +4,11 @@ from Modulos import RedeNeural
 from Modulos import DividirSinal
 from Modulos import LeituraEventos
 from Modulos import AssociaTrechoEvento
+from Modulos import SeizurePrediction
 from sklearn.decomposition import PCA
 from sklearn import preprocessing
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix
-import seaborn as sns
 
 
 # Data Standardization funcionou de maneira bastante satisfatória, melhorando significativamente
@@ -21,13 +20,20 @@ sinal_eeg = LeituraArquivos.ImportarSinalEEG()
 
 eventos = LeituraEventos.importar_evento()
 
-sinal_eeg_2 = sinal_eeg.canais["Fp1"]
-
 # Teste com sinal padronizado
+
+sinal_eeg_2 = sinal_eeg.canais['Fp1']
 
 sinal_eeg_2 = preprocessing.scale(sinal_eeg_2)
 
 sinal_div = DividirSinal.dividir_sinal(sinal_eeg_2, 3, sinal_eeg.frequencia_de_amostragem)
+
+eeg = []
+
+for i in sinal_eeg.canais:
+    eeg.append(sinal_eeg.canais[i])
+
+#SeizurePrediction.seizure_predict(sinal_div,eeg[0:2])
 
 AssociaTrechoEvento.associa_trecho_evento(sinal_div, eventos)
 
@@ -43,14 +49,15 @@ for i in range(0, len(sinal_div)):
 
 # Teste PCA
 
-pca = PCA()
-pca.fit(feature_vec)
-pca_data = pca.transform(feature_vec)
+#feature_vec = preprocessing.scale(feature_vec)
+#ca = PCA()
+#pca.fit(feature_vec)
+#pca_data = pca.transform(feature_vec)
 
 # Valor das PCs 1 e 2 para todos os trechos do sinal
 #print(pca_data[:,0:2])
 
-# PLotagem do gráfico de variância das PCs
+# Plotagem do gráfico de variância das PCs
 #per_var = np.round(pca.explained_variance_ratio_*100, decimals=1)
 #labels = ['PC' + str(x) for x in range (1,len(per_var)+1)]
 
@@ -60,11 +67,11 @@ pca_data = pca.transform(feature_vec)
 #plt.title('Scree Plot')
 #plt.show()
 
-saidas_trechos_2 = np.asarray(saidas_trechos)
+#saidas_trechos_2 = np.asarray(saidas_trechos)
 
-rede = RedeNeural.treinamento_rna(pca_data[:,0:2], saidas_trechos_2)
+#rede = RedeNeural.treinamento_rna(pca_data[:,0:3], saidas_trechos_2)
 
-#rede = RedeNeural.treinamento_rna(feature_vec, saidas_trechos)
+rede = RedeNeural.treinamento_rna(feature_vec, saidas_trechos)
 
 # Utilizando outra base de dados para testar a rede (não tem um bom desempenho)
 
