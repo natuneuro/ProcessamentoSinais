@@ -1,4 +1,5 @@
 from Modulos import LeituraArquivos
+from Modulos import ProcessamentoDoSinal
 from Modulos import WaveletEPsd
 from Modulos import RedeNeural
 from Modulos import DividirSinal
@@ -9,6 +10,7 @@ from sklearn.decomposition import PCA
 from sklearn import preprocessing
 import numpy as np
 import matplotlib.pyplot as plt
+from operator import itemgetter
 
 
 # Data Standardization funcionou de maneira bastante satisfatória, melhorando significativamente
@@ -20,22 +22,25 @@ sinal_eeg = LeituraArquivos.ImportarSinalEEG()
 
 eventos = LeituraEventos.importar_evento()
 
-# Teste com sinal padronizado
-
 sinal_eeg_2 = sinal_eeg.canais['Fp1']
 
-sinal_eeg_2 = preprocessing.scale(sinal_eeg_2)
+sinal_eeg_2 = ProcessamentoDoSinal.butter_bandpass_filter(sinal_eeg_2,1,60,sinal_eeg.frequencia_de_amostragem,6)
 
 sinal_div = DividirSinal.dividir_sinal(sinal_eeg_2, 3, sinal_eeg.frequencia_de_amostragem)
 
-eeg = []
-
-for i in sinal_eeg.canais:
-    eeg.append(sinal_eeg.canais[i])
-
-#SeizurePrediction.seizure_predict(sinal_div,eeg[0:2])
-
 AssociaTrechoEvento.associa_trecho_evento(sinal_div, eventos)
+
+for i in range(0, len(sinal_div)):
+    if sinal_div[i].ocorre_conv:
+        print(i)
+
+#array_test = []
+
+#for i in range(100, 110):
+    #array_test.extend(sinal_div[i].sinal)
+
+#plt.plot(array_test,linewidth=0.3)
+#plt.show()
 
 feature_vec = []
 
@@ -49,10 +54,11 @@ for i in range(0, len(sinal_div)):
 
 # Teste PCA
 
-#feature_vec = preprocessing.scale(feature_vec)
-#ca = PCA()
-#pca.fit(feature_vec)
-#pca_data = pca.transform(feature_vec)
+feature_vec = preprocessing.scale(feature_vec)
+
+pca = PCA()
+pca.fit(feature_vec)
+pca_data = pca.transform(feature_vec)
 
 # Valor das PCs 1 e 2 para todos os trechos do sinal
 #print(pca_data[:,0:2])
@@ -67,9 +73,9 @@ for i in range(0, len(sinal_div)):
 #plt.title('Scree Plot')
 #plt.show()
 
-#saidas_trechos_2 = np.asarray(saidas_trechos)
+saidas_trechos = np.asarray(saidas_trechos)
 
-#rede = RedeNeural.treinamento_rna(pca_data[:,0:3], saidas_trechos_2)
+#rede = RedeNeural.treinamento_rna(pca_data[:,0:2], saidas_trechos)
 
 rede = RedeNeural.treinamento_rna(feature_vec, saidas_trechos)
 
