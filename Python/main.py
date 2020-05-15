@@ -36,7 +36,7 @@ for i in range(0, len(sinal_div)):
 
 #array_test = []
 
-#for i in range(100, 110):
+#for i in range(0, 10):
     #array_test.extend(sinal_div[i].sinal)
 
 #plt.plot(array_test,linewidth=0.3)
