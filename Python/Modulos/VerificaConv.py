@@ -1,4 +1,4 @@
-from Classes import TrechoSinal
+from Classes import SinalDividido
 import string
 
 

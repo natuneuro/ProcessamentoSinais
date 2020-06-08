@@ -8,8 +8,10 @@ rope = "*"
 
 [packages]
 pyedflib = "*"
-numpy = "~=1.18.4"
+numpy = "*"
 mypy = "*"
 scipy = "*"
 matplotlib = "*"
 pywt = "*"
+tensorflow = "*"
+scikit-learn = "*"

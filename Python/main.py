@@ -1,124 +1,138 @@
-from Modulos import LeituraArquivos
-from Modulos import ProcessamentoDoSinal
-from Modulos import WaveletEPsd
-from Modulos import RedeNeural
-from Modulos import DividirSinal
-from Modulos import LeituraEventos
-from Modulos import AssociaTrechoEvento
-from Modulos import SeizurePrediction
-from sklearn.decomposition import PCA
-from sklearn import preprocessing
-import numpy as np
+from Modulos import LeituraArquivos, ProcessamentoDoSinal, LeituraEventos, AssociaTrechoEvento
+from Classes import ImagemEntrada
 import matplotlib.pyplot as plt
-from operator import itemgetter
+from scipy.signal import freqz
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
+from tensorflow.keras.layers import Conv2D, MaxPool2D
 
 
-# Data Standardization funcionou de maneira bastante satisfatória, melhorando significativamente
-# a acurácia da rede neural
 
-# Selecionando base de dados para o treinamento da rede
 
 sinal_eeg = LeituraArquivos.ImportarSinalEEG()
 
 eventos = LeituraEventos.importar_evento()
 
-sinal_eeg_2 = sinal_eeg.canais['Fp1']
+#sinal_matriz = np.array([np.array(canal)
+#                         for canal in sinal_eeg.canais.values()])
 
-sinal_eeg_2 = ProcessamentoDoSinal.butter_bandpass_filter(sinal_eeg_2,1,60,sinal_eeg.frequencia_de_amostragem,6)
+tamanho_corte = 3
+fs = sinal_eeg.frequencia_de_amostragem
 
-sinal_div = DividirSinal.dividir_sinal(sinal_eeg_2, 3, sinal_eeg.frequencia_de_amostragem)
+print(fs)
 
-AssociaTrechoEvento.associa_trecho_evento(sinal_div, eventos)
+#sinal_dividido = ProcessamentoDoSinal.dividir_sinal(
+#    sinal_matriz, tamanho_corte, sinal_eeg.frequencia_de_amostragem)
 
-for i in range(0, len(sinal_div)):
-    if sinal_div[i].ocorre_conv:
-        print(i)
+#AssociaTrechoEvento.associa_trecho_evento(sinal_dividido, eventos)
 
-#array_test = []
+#for i in range(0, len(sinal_dividido)):
+#    if sinal_dividido[i].ocorre_conv:
+#        print(i)
 
-#for i in range(0, 10):
-    #array_test.extend(sinal_div[i].sinal)
+# fazer um loop para preencher a lista com as imagens de entrada
 
-#plt.plot(array_test,linewidth=0.3)
+# filtrar o sinal nas faixas desejadas
+
+sinal_delta_theta = sinal_eeg.decomporSinalEmFaixaDeFrequencia([1, 7])
+sinal_alpha_beta = sinal_eeg.decomporSinalEmFaixaDeFrequencia([8, 30])
+sinal_gama = sinal_eeg.decomporSinalEmFaixaDeFrequencia([31, 100])
+
+# dividir sinais
+delta_theta_dividido = ProcessamentoDoSinal.dividir_sinal(sinal_delta_theta, tamanho_corte, fs)
+alpha_beta_dividido = ProcessamentoDoSinal.dividir_sinal(sinal_alpha_beta, tamanho_corte, fs)
+gama_dividido = ProcessamentoDoSinal.dividir_sinal(sinal_gama, tamanho_corte, fs)
+
+# associando os trechos aos eventos
+AssociaTrechoEvento.associa_trecho_evento(delta_theta_dividido, eventos)
+AssociaTrechoEvento.associa_trecho_evento(alpha_beta_dividido, eventos)
+AssociaTrechoEvento.associa_trecho_evento(gama_dividido, eventos)
+
+#plt.plot(delta_theta_dividido[0].sinal[0])
+#plt.show()
+#plt.plot(alpha_beta_dividido[0].sinal[0])
+#plt.show()
+#plt.plot(gama_dividido[0].sinal[0])
 #plt.show()
 
-feature_vec = []
-
-for i in range(0, len(sinal_div)):
-    feature_vec.append(WaveletEPsd.extrair_caracteristicas(sinal_div[i].sinal, sinal_eeg.frequencia_de_amostragem))
-
-saidas_trechos = []
-
-for i in range(0, len(sinal_div)):
-    saidas_trechos.append(sinal_div[i].ocorre_conv)
-
-# Teste PCA
-
-feature_vec = preprocessing.scale(feature_vec)
-
-pca = PCA()
-pca.fit(feature_vec)
-pca_data = pca.transform(feature_vec)
-
-# Valor das PCs 1 e 2 para todos os trechos do sinal
-#print(pca_data[:,0:2])
-
-# Plotagem do gráfico de variância das PCs
-#per_var = np.round(pca.explained_variance_ratio_*100, decimals=1)
-#labels = ['PC' + str(x) for x in range (1,len(per_var)+1)]
-
-#plt.bar(x=range(1,len(per_var)+1), height=per_var, tick_label=labels)
-#plt.ylabel('Percentage of Explained Varience')
-#plt.xlabel('Principal Component')
-#plt.title('Scree Plot')
+#plt.imshow(gama_dividido[0].sinal)
 #plt.show()
 
-saidas_trechos = np.asarray(saidas_trechos)
+# preenchendo uma lista com imagens
 
-#rede = RedeNeural.treinamento_rna(pca_data[:,0:2], saidas_trechos)
+imagens = []
 
-rede = RedeNeural.treinamento_rna(feature_vec, saidas_trechos)
+for i in range(0, len(gama_dividido)):
+    imagens.append(ImagemEntrada.ImagemEntrada(delta_theta_dividido[i].sinal, alpha_beta_dividido[i].sinal,
+                                               gama_dividido[i].sinal, gama_dividido[i].tempo_inicio,
+                                               gama_dividido[i].tempo_final, gama_dividido[i].ocorre_conv))
 
-# Utilizando outra base de dados para testar a rede (não tem um bom desempenho)
+# para funcionar é necessário transformar os 3 sinais em uma matriz 3D
 
-#sinal_eeg = LeituraArquivos.ImportarSinalEEG()
+aux_1 = []
+aux_2 = []
+imagem_3c = []
+entrada_rede = []
 
-#eventos = LeituraEventos.importar_evento()
+for i in range(0, len(imagens)):
+    for j in range(0, 21):
+        for k in range(0, len(imagens)):
+            aux_1.append(imagens[i].imagem_delta_theta[j][k])
+            aux_1.append(imagens[i].imagem_alpha_beta[j][k])
+            aux_1.append(imagens[i].imagem_gama[j][k])
+            # cria lista com os 3 valores de cada faixa
+            aux_2.append(aux_1)
+            # coloca essa lista na lista de listas
+            aux_1 = []
+            # limpa a lista auxiliar
+        imagem_3c.append(aux_2)
+        # cria uma imagem
+        aux_2 = []
+        # limpa segundo auxiliar
+    entrada_rede.append(imagem_3c)
+    # cria a lista de imagens
+    imagem_3c = []
+    # limpa o auxiliar de imagens "3D"
 
-#sinal_eeg_2 = sinal_eeg.canais["Fp1"]
+y = []
 
-# Teste com sinal padronizado
+for i in range(0, len(imagens)):
+    y.append(imagens[i].ocorre_convulsao)
 
-#sinal_eeg_2 = preprocessing.scale(sinal_eeg_2)
+y = np.array(y)
 
-#sinal_div = DividirSinal.dividir_sinal(sinal_eeg_2, 3, sinal_eeg.frequencia_de_amostragem)
+X = np.array(entrada_rede)
 
-#AssociaTrechoEvento.associa_trecho_evento(sinal_div, eventos)
+print(X.shape)
 
-#feature_vec = []
+print(y.shape)
 
-#for i in range(0, len(sinal_div)):
-    #feature_vec.append(WaveletEPsd.extrair_caracteristicas(sinal_div[i].sinal, sinal_eeg.frequencia_de_amostragem))
-
-#saidas_trechos = []
-
-#for i in range(0, len(sinal_div)):
-    #saidas_trechos.append(sinal_div[i].ocorre_conv)
-
-# Teste PCA
-
-#scaled_data = preprocessing.scale(feature_vec)
-
-#pca = PCA()
-#pca.fit(scaled_data)
-#pca_data = pca.score_samples(scaled_data)
-
-#saidas_trechos = np.asarray(saidas_trechos)
-
-#rounded_predictions = RedeNeural.predic_rna(rede, feature_vec)
-
-#cm = confusion_matrix(saidas_trechos, rounded_predictions)
-#cm_plot_labels = ['Normal', 'Convulsão']
-
-#sns.heatmap(cm, annot=True, fmt='.5g', cmap="Blues")
+#plt.imshow(X[0])
 #plt.show()
+
+model = Sequential()
+
+model.add(Conv2D(64,(3,3),input_shape=X[0].shape))
+model.add(Activation("relu"))
+model.add(MaxPool2D(pool_size=(2,2)))
+
+model.add(Conv2D(64,(3,3)))
+model.add(Activation("relu"))
+model.add(MaxPool2D(pool_size=(2,2)))
+
+model.add(Flatten())
+
+model.add(Dense(64))
+
+model.add(Dense(1))
+model.add(Activation('sigmoid'))
+
+model.compile(loss="binary_crossentropy",
+              optimizer="adam",
+              metrics=['accuracy'])
+
+model.fit(X, y, epochs=10)

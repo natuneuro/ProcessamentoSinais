@@ -1,0 +1,15 @@
+Index: ../../Dados/.gitignore
+===================================================================
+--- ../../Dados/.gitignore	(revision 987e0996ee09c5212ae11c2de4213b22930f9630)
++++ ../../Dados/.gitignore	(revision 987e0996ee09c5212ae11c2de4213b22930f9630)
+@@ -1,9 +0,0 @@
+-# Não sincronizar arquivos de EEG, lbl, tse, e txt
+-*.edf
+-*.tse
+-*.tse_bi
+-*.lbl
+-*.lbl_bi
+-*.txt
+-
+-edf/
+\ No newline at end of file

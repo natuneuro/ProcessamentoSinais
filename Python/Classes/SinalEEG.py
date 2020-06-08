@@ -6,13 +6,13 @@ from Modulos import ProcessamentoDoSinal
 class SinalEEG(object):
     frequencia_de_amostragem: int
 
-    canais = {"Fp1": [], "Fp2": [], "F7": [],
-              "F3": [], "Fz": [], "F4": [],
-              "F8": [], "A1": [], "T3": [],
-              "C3": [], "Cz": [], "C4": [],
-              "T4": [], "A2": [], "T5": [],
-              "P3": [], "Pz": [], "P4": [],
-              "T6": [], "O1": [], "O2": []}
+    canais = {"FP1": None, "FP2": None, "F7": None,
+              "F3": None, "FZ": None, "F4": None,
+              "F8": None, "A1": None, "T3": None,
+              "C3": None, "CZ": None, "C4": None,
+              "T4": None, "A2": None, "T5": None,
+              "P3": None, "Pz": None, "P4": None,
+              "T6": None, "O1": None, "O2": None}
 
     def __init__(self, sinal_arquivo_edf: edfreader.EdfReader):
         canais_no_sinal = sinal_arquivo_edf.getSignalLabels()
@@ -33,10 +33,12 @@ class SinalEEG(object):
 
             # Se ele existe, atribui o sinal no dicionario com o indice respectivo do canal, caso contrario, printa um erro
             if canal_a_ser_salvo is not None:
-                self.canais[canal_a_ser_salvo] = sinal_do_canal
+                self.canais[canal_a_ser_salvo] = np.array(sinal_do_canal)
 
     def decomporSinalEmFaixaDeFrequencia(self, faixa_de_frequencia):
-        valores_dos_canais = np.array(self.canais.values())
+        valores_dos_canais = [np.array(canal)
+                              for canal in self.canais.values()]
+
         sinal_decomposto = ProcessamentoDoSinal.butter_bandpass_filter(
             valores_dos_canais, faixa_de_frequencia[0], faixa_de_frequencia[1], self.frequencia_de_amostragem)
 

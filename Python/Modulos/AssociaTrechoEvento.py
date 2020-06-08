@@ -1,4 +1,4 @@
-from Classes import TrechoSinal
+from Classes import SinalDividido
 from Modulos import VerificaConv
 
 
@@ -9,11 +9,6 @@ def associa_trecho_evento (trechos_sinal, eventos):
 
     for i in range(0, quantidade_trechos - 1):
         for j in range(0, len(eventos)):
-            #sinal_div[i].ocorre_conv = VerificaConv.ver_ocorre_conv(sinal_div[i], lista_tipos_conv, eventos[j])
-            #if sinal_div[i].ocorre_conv:
-                #break
-            #conv = VerificaConv.ver_ocorre_conv(trechos_sinal[i], lista_tipos_conv, eventos[j])
-            #trechos_sinal[i].ocorre_conv = conv
             trechos_sinal[i].ocorre_conv = VerificaConv.ver_ocorre_conv(trechos_sinal[i], lista_tipos_conv, eventos[j])
             if trechos_sinal[i].ocorre_conv:
                 break
