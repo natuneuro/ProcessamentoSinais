@@ -4,13 +4,12 @@ import matplotlib.pyplot as plt
 from scipy.signal import freqz
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
+import sklearn.model_selection
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
 from tensorflow.keras.layers import Conv2D, MaxPool2D
-
-
 
 
 sinal_eeg = LeituraArquivos.ImportarSinalEEG()
@@ -107,16 +106,20 @@ y = np.array(y)
 
 X = np.array(entrada_rede)
 
+X = tf.keras.utils.normalize(X, axis=1)
+
 print(X.shape)
 
 print(y.shape)
+
+print(X[0])
 
 #plt.imshow(X[0])
 #plt.show()
 
 model = Sequential()
 
-model.add(Conv2D(64,(3,3),input_shape=X[0].shape))
+model.add(Conv2D(64,(3,3),input_shape=X.shape[1:]))
 model.add(Activation("relu"))
 model.add(MaxPool2D(pool_size=(2,2)))
 
@@ -127,6 +130,7 @@ model.add(MaxPool2D(pool_size=(2,2)))
 model.add(Flatten())
 
 model.add(Dense(64))
+model.add(Activation('relu'))
 
 model.add(Dense(1))
 model.add(Activation('sigmoid'))
@@ -135,4 +139,8 @@ model.compile(loss="binary_crossentropy",
               optimizer="adam",
               metrics=['accuracy'])
 
-model.fit(X, y, epochs=10)
+X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size=0.3)
+
+print(X_train.shape)
+
+model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=10)
