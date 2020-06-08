@@ -10,6 +10,38 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
 from tensorflow.keras.layers import Conv2D, MaxPool2D
+from tensorflow.keras.layers import Convolution2D
+from sklearn.metrics import confusion_matrix
+import itertools
+
+
+def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion Matix', cmap=plt.cm.Blues):
+
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:,np.newaxis]
+        print("Normalized Confusion Matrix")
+    else:
+        print("Confusion Matrix")
+
+    print(cm)
+
+    thresh = cm.max()/2
+    for i,j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j,i,cm[i,j],
+                horizontalalignment="center",
+                color="white" if cm[i,j] > thresh else "black")
+
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.show()
 
 
 sinal_eeg = LeituraArquivos.ImportarSinalEEG()
@@ -142,5 +174,12 @@ model.compile(loss="binary_crossentropy",
 X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size=0.3)
 
 print(X_train.shape)
+print(X_test.shape)
 
-model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=10)
+model.fit(X_train, y_train, batch_size=32, validation_data=(X_test, y_test), epochs=50, verbose=2)
+
+predictions = (model.predict(X, batch_size=32, verbose=0) > 0.5).astype("int32")
+
+cm = confusion_matrix(y, predictions)
+cm_plot_labels = ['Normal', 'Epilepsia']
+plot_confusion_matrix(cm, cm_plot_labels, title='Confusion Matrix')
