@@ -11,8 +11,12 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
 from tensorflow.keras.layers import Conv2D, MaxPool2D
 from tensorflow.keras.layers import Convolution2D
+from tensorflow.keras.callbacks import TensorBoard
+import tensorflow.keras.optimizers
+import tensorflow.keras.applications
 from sklearn.metrics import confusion_matrix
 import itertools
+import time
 
 
 def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion Matix', cmap=plt.cm.Blues):
@@ -51,7 +55,7 @@ eventos = LeituraEventos.importar_evento()
 #sinal_matriz = np.array([np.array(canal)
 #                         for canal in sinal_eeg.canais.values()])
 
-tamanho_corte = 3
+tamanho_corte = 1
 fs = sinal_eeg.frequencia_de_amostragem
 
 print(fs)
@@ -73,12 +77,10 @@ sinal_delta_theta = sinal_eeg.decomporSinalEmFaixaDeFrequencia([1, 7])
 sinal_alpha_beta = sinal_eeg.decomporSinalEmFaixaDeFrequencia([8, 30])
 sinal_gama = sinal_eeg.decomporSinalEmFaixaDeFrequencia([31, 100])
 
-# dividir sinais
 delta_theta_dividido = ProcessamentoDoSinal.dividir_sinal(sinal_delta_theta, tamanho_corte, fs)
 alpha_beta_dividido = ProcessamentoDoSinal.dividir_sinal(sinal_alpha_beta, tamanho_corte, fs)
 gama_dividido = ProcessamentoDoSinal.dividir_sinal(sinal_gama, tamanho_corte, fs)
 
-# associando os trechos aos eventos
 AssociaTrechoEvento.associa_trecho_evento(delta_theta_dividido, eventos)
 AssociaTrechoEvento.associa_trecho_evento(alpha_beta_dividido, eventos)
 AssociaTrechoEvento.associa_trecho_evento(gama_dividido, eventos)
@@ -102,7 +104,6 @@ for i in range(0, len(gama_dividido)):
                                                gama_dividido[i].sinal, gama_dividido[i].tempo_inicio,
                                                gama_dividido[i].tempo_final, gama_dividido[i].ocorre_conv))
 
-# para funcionar é necessário transformar os 3 sinais em uma matriz 3D
 
 aux_1 = []
 aux_2 = []
@@ -111,7 +112,7 @@ entrada_rede = []
 
 for i in range(0, len(imagens)):
     for j in range(0, 21):
-        for k in range(0, len(imagens)):
+        for k in range(0, len(gama_dividido[0].sinal[0])):
             aux_1.append(imagens[i].imagem_delta_theta[j][k])
             aux_1.append(imagens[i].imagem_alpha_beta[j][k])
             aux_1.append(imagens[i].imagem_gama[j][k])
@@ -138,24 +139,45 @@ y = np.array(y)
 
 X = np.array(entrada_rede)
 
-X = tf.keras.utils.normalize(X, axis=1)
-
 print(X.shape)
 
 print(y.shape)
 
-print(X[0])
+#print(X[0])
 
 #plt.imshow(X[0])
 #plt.show()
 
+#vgg16_model = tf.keras.applications.vgg16.VGG16()
+
+# necessário redimensionar as imagens para 223x223x3
+
+#model = Sequential()
+#for layer in vgg16_model.layers:
+    #model.add(layer)
+
+#model.layers.pop()
+
+#for layer in model.layers:
+    #layer.trainable = False
+
+#model.add(Dense(2, activation='softmax'))
+
+#model.compile(tf.keras.optimizers.Adam(learning_rate=0.0001),
+              #loss='categorical_crossentropy',
+              #metrics=['accuracy'])
+
+#X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size=0.3)
+
+#model.fit(X_train, y_train, batch_size=4, epochs=10, validation_data=(X_test, y_test))
+
 model = Sequential()
 
-model.add(Conv2D(64,(3,3),input_shape=X.shape[1:]))
+model.add(Conv2D(64,kernel_size=(3,3), strides=(1,1), input_shape=X.shape[1:]))
 model.add(Activation("relu"))
 model.add(MaxPool2D(pool_size=(2,2)))
 
-model.add(Conv2D(64,(3,3)))
+model.add(Conv2D(64,kernel_size=(3,3), strides=(1,1)))
 model.add(Activation("relu"))
 model.add(MaxPool2D(pool_size=(2,2)))
 
@@ -167,16 +189,14 @@ model.add(Activation('relu'))
 model.add(Dense(1))
 model.add(Activation('sigmoid'))
 
-model.compile(loss="binary_crossentropy",
-              optimizer="adam",
-              metrics=['accuracy'])
+model.compile(tf.keras.optimizers.SGD(learning_rate=0.0003, momentum=0.9), loss="binary_crossentropy", metrics=['accuracy'])
 
 X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size=0.3)
 
 print(X_train.shape)
 print(X_test.shape)
 
-model.fit(X_train, y_train, batch_size=32, validation_data=(X_test, y_test), epochs=50, verbose=2)
+model.fit(X_train, y_train, batch_size=4, validation_data=(X_test, y_test), epochs=20, verbose=1)
 
 predictions = (model.predict(X, batch_size=32, verbose=0) > 0.5).astype("int32")
 
