@@ -16,6 +16,7 @@ import tensorflow.keras.optimizers
 import tensorflow.keras.applications
 from sklearn.metrics import confusion_matrix
 import itertools
+import math
 import time
 
 
@@ -55,7 +56,6 @@ eventos = LeituraEventos.importar_evento()
 #sinal_matriz = np.array([np.array(canal)
 #                         for canal in sinal_eeg.canais.values()])
 
-tamanho_corte = 1
 fs = sinal_eeg.frequencia_de_amostragem
 
 print(fs)
@@ -77,9 +77,9 @@ sinal_delta_theta = sinal_eeg.decomporSinalEmFaixaDeFrequencia([1, 7])
 sinal_alpha_beta = sinal_eeg.decomporSinalEmFaixaDeFrequencia([8, 30])
 sinal_gama = sinal_eeg.decomporSinalEmFaixaDeFrequencia([31, 100])
 
-delta_theta_dividido = ProcessamentoDoSinal.dividir_sinal(sinal_delta_theta, tamanho_corte, fs)
-alpha_beta_dividido = ProcessamentoDoSinal.dividir_sinal(sinal_alpha_beta, tamanho_corte, fs)
-gama_dividido = ProcessamentoDoSinal.dividir_sinal(sinal_gama, tamanho_corte, fs)
+delta_theta_dividido = ProcessamentoDoSinal.dividir_sinal(sinal_delta_theta, fs)
+alpha_beta_dividido = ProcessamentoDoSinal.dividir_sinal(sinal_alpha_beta, fs)
+gama_dividido = ProcessamentoDoSinal.dividir_sinal(sinal_gama, fs)
 
 AssociaTrechoEvento.associa_trecho_evento(delta_theta_dividido, eventos)
 AssociaTrechoEvento.associa_trecho_evento(alpha_beta_dividido, eventos)
@@ -91,7 +91,6 @@ AssociaTrechoEvento.associa_trecho_evento(gama_dividido, eventos)
 #plt.show()
 #plt.plot(gama_dividido[0].sinal[0])
 #plt.show()
-
 #plt.imshow(gama_dividido[0].sinal)
 #plt.show()
 
@@ -104,23 +103,27 @@ for i in range(0, len(gama_dividido)):
                                                gama_dividido[i].sinal, gama_dividido[i].tempo_inicio,
                                                gama_dividido[i].tempo_final, gama_dividido[i].ocorre_conv))
 
-
 aux_1 = []
 aux_2 = []
 imagem_3c = []
 entrada_rede = []
 
 for i in range(0, len(imagens)):
-    for j in range(0, 21):
-        for k in range(0, len(gama_dividido[0].sinal[0])):
-            aux_1.append(imagens[i].imagem_delta_theta[j][k])
-            aux_1.append(imagens[i].imagem_alpha_beta[j][k])
-            aux_1.append(imagens[i].imagem_gama[j][k])
-            # cria lista com os 3 valores de cada faixa
-            aux_2.append(aux_1)
-            # coloca essa lista na lista de listas
-            aux_1 = []
-            # limpa a lista auxiliar
+    for j in range(0, 224):
+        for k in range(0, len(delta_theta_dividido[0].sinal[0])):
+            if j < 21:
+                aux_1.append(imagens[i].imagem_delta_theta[j][k])
+                aux_1.append(imagens[i].imagem_alpha_beta[j][k])
+                aux_1.append(imagens[i].imagem_gama[j][k])
+                # cria lista com os 3 valores de cada faixa
+                aux_2.append(aux_1)
+                # coloca essa lista na lista de listas
+                aux_1 = []
+                # limpa a lista auxiliar
+            else:
+                aux_1 = [0,0,0]
+                aux_2.append(aux_1)
+                aux_1 = []
         imagem_3c.append(aux_2)
         # cria uma imagem
         aux_2 = []
@@ -148,57 +151,62 @@ print(y.shape)
 #plt.imshow(X[0])
 #plt.show()
 
-#vgg16_model = tf.keras.applications.vgg16.VGG16()
+vgg16_model = tf.keras.applications.vgg16.VGG16()
 
-# necessário redimensionar as imagens para 223x223x3
+# necessário redimensionar as imagens para 224x224x3
+
+model = Sequential()
+for layer in vgg16_model.layers:
+    model.add(layer)
+
+model.layers.pop()
+
+for layer in model.layers:
+    layer.trainable = False
+
+model.add(Dense(1, activation='sigmoid'))
+
+model.compile(tf.keras.optimizers.Adam(learning_rate=.0001),
+              loss='binary_crossentropy',
+              metrics=['accuracy'])
+
+X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size=0.15)
+
+X_train = tf.keras.utils.normalize(X_train, axis=1)
+X_test = tf.keras.utils.normalize(X_test, axis=1)
+
+batch = math.floor(len(X))
+
+model.fit(X_train, y_train, batch_size=64, epochs=20, validation_data=(X_test, y_test))
 
 #model = Sequential()
-#for layer in vgg16_model.layers:
-    #model.add(layer)
 
-#model.layers.pop()
+#model.add(Conv2D(64,kernel_size=(3,3), strides=(1,1), input_shape=X.shape[1:]))
+#model.add(Activation("relu"))
+#model.add(MaxPool2D(pool_size=(2,2)))
 
-#for layer in model.layers:
-    #layer.trainable = False
+#model.add(Conv2D(64,kernel_size=(3,3), strides=(1,1)))
+#model.add(Activation("relu"))
+#model.add(MaxPool2D(pool_size=(2,2)))
 
-#model.add(Dense(2, activation='softmax'))
+#model.add(Flatten())
 
-#model.compile(tf.keras.optimizers.Adam(learning_rate=0.0001),
-              #loss='categorical_crossentropy',
-              #metrics=['accuracy'])
+#model.add(Dense(64))
+#model.add(Activation('relu'))
+
+#model.add(Dense(1))
+#model.add(Activation('sigmoid'))
+
+#model.compile(tf.keras.optimizers.SGD(learning_rate=0.0003, momentum=0.9), loss="binary_crossentropy", metrics=['accuracy'])
 
 #X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size=0.3)
 
-#model.fit(X_train, y_train, batch_size=4, epochs=10, validation_data=(X_test, y_test))
+#print(X_train.shape)
+#print(X_test.shape)
 
-model = Sequential()
+#model.fit(X_train, y_train, batch_size=32, validation_data=(X_test, y_test), epochs=20, verbose=2)
 
-model.add(Conv2D(64,kernel_size=(3,3), strides=(1,1), input_shape=X.shape[1:]))
-model.add(Activation("relu"))
-model.add(MaxPool2D(pool_size=(2,2)))
-
-model.add(Conv2D(64,kernel_size=(3,3), strides=(1,1)))
-model.add(Activation("relu"))
-model.add(MaxPool2D(pool_size=(2,2)))
-
-model.add(Flatten())
-
-model.add(Dense(64))
-model.add(Activation('relu'))
-
-model.add(Dense(1))
-model.add(Activation('sigmoid'))
-
-model.compile(tf.keras.optimizers.SGD(learning_rate=0.0003, momentum=0.9), loss="binary_crossentropy", metrics=['accuracy'])
-
-X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size=0.3)
-
-print(X_train.shape)
-print(X_test.shape)
-
-model.fit(X_train, y_train, batch_size=4, validation_data=(X_test, y_test), epochs=20, verbose=1)
-
-predictions = (model.predict(X, batch_size=32, verbose=0) > 0.5).astype("int32")
+predictions = (model.predict(X, batch_size=64, verbose=0) > 0.5).astype("int32")
 
 cm = confusion_matrix(y, predictions)
 cm_plot_labels = ['Normal', 'Epilepsia']

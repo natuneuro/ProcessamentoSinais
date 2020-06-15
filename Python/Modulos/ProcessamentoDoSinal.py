@@ -18,10 +18,14 @@ def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
     return y
 
 
-def dividir_sinal(sinal, tamanho_do_corte, frequencia_sinal):
+def dividir_sinal(sinal, frequencia_sinal):
     comprimento_sinal = len(sinal[0])
 
-    quantidade_amostras_por_intervalo = math.floor(tamanho_do_corte/(1/frequencia_sinal))
+    tamanho_do_corte = 1
+
+    #quantidade_amostras_por_intervalo = math.floor(tamanho_do_corte/(1/frequencia_sinal))
+
+    quantidade_amostras_por_intervalo = 225
 
     quantidade_intervalos = math.ceil(
         comprimento_sinal / quantidade_amostras_por_intervalo)
@@ -31,23 +35,23 @@ def dividir_sinal(sinal, tamanho_do_corte, frequencia_sinal):
 
     trechos_sinal = []
 
-    trecho = SinalDividido.SinalDividido(np.array(sinal[:, (inicio - 1):(final - 1)]),
+    trecho = SinalDividido.SinalDividido(np.array(sinal[:,(inicio-1):(final-1)]),
                                          0, quantidade_amostras_por_intervalo*(1/frequencia_sinal))
 
     trechos_sinal.append(trecho)
 
-    for i in range(2, quantidade_intervalos + 1):
+    for i in range(2, quantidade_intervalos):
         inicio = final + 1
         final = i*quantidade_amostras_por_intervalo
 
         if final > comprimento_sinal:
-            trecho = SinalDividido.SinalDividido(np.array(sinal[:, (inicio - 1):(final - 1)]), inicio * (
-                1 / frequencia_sinal), len(sinal[0])*(1 / frequencia_sinal))
+            trecho = SinalDividido.SinalDividido(np.array(sinal[:,(inicio-1):(final-1)]),
+                inicio*(1/frequencia_sinal), len(sinal[0])*(1/frequencia_sinal))
 
             trechos_sinal.append(trecho)
         else:
-            trecho = SinalDividido.SinalDividido(np.array(sinal[:, (inicio - 1):(final - 1)]), inicio * (
-                1 / frequencia_sinal), final*(1 / frequencia_sinal))
+            trecho = SinalDividido.SinalDividido(np.array(sinal[:,(inicio-1):(final-1)]),
+                inicio*(1/frequencia_sinal), final*(1/frequencia_sinal))
 
             trechos_sinal.append(trecho)
 

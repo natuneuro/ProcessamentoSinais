@@ -6,6 +6,7 @@ def dividir_sinal(sinal, tamanho_do_corte, fs):
 
     comprimento_sinal = len(sinal)
     numero_amostras_tempo = math.floor(tamanho_do_corte/(1/fs))
+    #numero_amostras_tempo = 223
     quantidade_intervalos = math.ceil(comprimento_sinal/numero_amostras_tempo)
 
     inicio = 1
