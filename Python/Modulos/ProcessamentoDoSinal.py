@@ -25,7 +25,9 @@ def dividir_sinal(sinal, frequencia_sinal):
 
     #quantidade_amostras_por_intervalo = math.floor(tamanho_do_corte/(1/frequencia_sinal))
 
-    quantidade_amostras_por_intervalo = 225
+    #225 para imagem 224x224x3
+
+    quantidade_amostras_por_intervalo = 421
 
     quantidade_intervalos = math.ceil(
         comprimento_sinal / quantidade_amostras_por_intervalo)
