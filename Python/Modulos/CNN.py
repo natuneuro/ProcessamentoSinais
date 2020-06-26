@@ -37,5 +37,24 @@ def CNN_fit(imagens, saidas):
     predictions = (model.predict(imagens, batch_size=32, verbose=0) > 0.5).astype("int32")
 
     cm = confusion_matrix(saidas, predictions)
-    cm_plot_labels = ['Normal', 'Epilepsia']
+    
+    #---- Classification Accuracy  ---------
+    TP=cm[1][1]
+    TN=cm[0][0]
+    FP=cm[1][0]
+    FN=cm[0][1]
+
+    accuracy=(TP+TN)/(TP+FP+TN+FN)
+    print("accuracy: ",accuracy)
+
+    #recall=TP/(TP+FN)
+    #print("recall: ",recall)
+
+    precision=TP/(TP+FP)
+    print("precision: ", precision)
+
+    #f_score=2*(precision*recall)/(precision+recall)
+    #print("f-score: ", f_score)
+
+    cm_plot_labels = ['Normal', 'Epilepsy']
     ConfusionMatrix.plot_confusion_matrix(cm, cm_plot_labels, title='Confusion Matrix')
