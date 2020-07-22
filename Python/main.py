@@ -44,15 +44,15 @@ dados = CriaImagen.cria_imagens_saidas(
 # plt.imshow(dados[0][10])
 # plt.show()
 
-rgb_imagens = []
+# rgb_imagens = []
 
-for i in range(0, len(dados[0])):
-    img_rgb = tf.keras.preprocessing.image.array_to_img(dados[0][i])
-    array_rgb = tf.keras.preprocessing.image.img_to_array(img_rgb)
-    array_rgb = array_rgb * (1.0 / 255)
-    rgb_imagens.append(array_rgb)
+# for i in range(0, len(dados[0])):
+# img_rgb = tf.keras.preprocessing.image.array_to_img(dados[0][i])
+# array_rgb = tf.keras.preprocessing.image.img_to_array(img_rgb)
+# array_rgb = array_rgb * (1.0 / 255)
+# rgb_imagens.append(array_rgb)
 
-rgb_imagens = np.array(rgb_imagens)
+# rgb_imagens = np.array(rgb_imagens)
 
 fft_imagens = []
 
