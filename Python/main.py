@@ -4,6 +4,7 @@ from sklearn import preprocessing
 import numpy as np
 from PIL import Image
 import tensorflow as tf
+import math
 
 from Modulos import (
     CNN,
@@ -62,9 +63,12 @@ for i in range(0, len(dados[0])):
     img_fft = tf.keras.preprocessing.image.array_to_img(fft)
     array_fft = tf.keras.preprocessing.image.img_to_array(img_fft)
     array_fft = array_fft * (1.0 / 255)
-    fft_imagens.append(fft)
+    fft_imagens.append(array_fft)
 
 fft_imagens = np.array(fft_imagens)
+
+# plt.imshow(fft_imagens[16])
+# plt.show()
 
 # print(np.min(fft_imagens[0]))
 
@@ -89,7 +93,26 @@ fft_imagens = np.array(fft_imagens)
 
 # UsaRede.treina_rede(fft_imagens, dados[1])
 
-cm = UsaRede.classifica_dados(fft_imagens, dados[1])
+# cm = UsaRede.classifica_dados(fft_imagens, dados[1])
 
-cm_plot_labels = ["Normal", "Epilepsy"]
-ConfusionMatrix.plot_confusion_matrix(cm, cm_plot_labels, title="Confusion Matrix")
+# cm_plot_labels = ["Normal", "Epilepsy"]
+# ConfusionMatrix.plot_confusion_matrix(cm, cm_plot_labels, title="Confusion Matrix")
+
+# sinal_eeg = np.array(sinal_eeg)
+
+# modificação que faz com que os intervalos onde acontece convulsão sejam marcados em vermelho
+# no gráfico. Utiliza só um canal. Não fiquei satisfeito, achei bem mais ou menos, porém é mais
+# fácil do que marcar o fazer o plot do intervalo em outra cor. Vou fazer a modificação para
+# plotar em outra cor, mas por enquanto só consegui fazer essa.
+
+fig, ax = plt.subplots()
+
+ax.plot(sinal_eeg.canais["FP1"], linewidth=1, label="EEG Normal")
+for i in range(0, len(gama_dividido)):
+    if gama_dividido[i].ocorre_conv:
+        inicio = math.floor(gama_dividido[i].tempo_inicio * fs)
+        fim = math.floor(gama_dividido[i].tempo_final * fs)
+        ax.axvspan(inicio, fim, alpha=0.5, color="r")
+
+
+plt.show()
