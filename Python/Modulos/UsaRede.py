@@ -43,7 +43,7 @@ def classifica_dados(entradas: ImagemEntrada, saidas):
     return cm
 
 
-def classifica_sem_saidass(entradas: ImagemEntrada):
+def classifica_sem_saidas(entradas: ImagemEntrada):
 
     model = tf.keras.models.load_model("meu_modelo")
 

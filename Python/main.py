@@ -16,6 +16,7 @@ from Modulos import (
     ProcessamentoDoSinal,
     CriaRede,
     UsaRede,
+    graficos,
 )
 
 # CriaRede.cria_modelo()
@@ -42,19 +43,6 @@ dados = CriaImagen.cria_imagens_saidas(
     gama_dividido, delta_theta_dividido, alpha_beta_dividido
 )
 
-# plt.imshow(dados[0][10])
-# plt.show()
-
-# rgb_imagens = []
-
-# for i in range(0, len(dados[0])):
-# img_rgb = tf.keras.preprocessing.image.array_to_img(dados[0][i])
-# array_rgb = tf.keras.preprocessing.image.img_to_array(img_rgb)
-# array_rgb = array_rgb * (1.0 / 255)
-# rgb_imagens.append(array_rgb)
-
-# rgb_imagens = np.array(rgb_imagens)
-
 fft_imagens = []
 
 for i in range(0, len(dados[0])):
@@ -67,52 +55,46 @@ for i in range(0, len(dados[0])):
 
 fft_imagens = np.array(fft_imagens)
 
-# plt.imshow(fft_imagens[16])
-# plt.show()
-
-# print(np.min(fft_imagens[0]))
-
-# classification_info = CNN.CNN_fit(fft_imagens, dados[1])
-
-# classification_info = CNN.CNN_fit(dados[0], dados[1])
-
-# classification_info = CNN.CNN_fit(rgb_imagens, dados[1])
-
-# classification_info é um array com a estrutura [accuracy, precision, cm]
-
-# print("\nAccuracy:")
-# print(classification_info[0])
-
-# print("\nPrecision:")
-# print(classification_info[1])
-
-# cm_plot_labels = ["Normal", "Epilepsy"]
-# ConfusionMatrix.plot_confusion_matrix(
-# classification_info[2], cm_plot_labels, title="Confusion Matrix"
-# )
-
 # UsaRede.treina_rede(fft_imagens, dados[1])
 
 # cm = UsaRede.classifica_dados(fft_imagens, dados[1])
 
+predictions = UsaRede.classifica_sem_saidas(fft_imagens)
+
 # cm_plot_labels = ["Normal", "Epilepsy"]
 # ConfusionMatrix.plot_confusion_matrix(cm, cm_plot_labels, title="Confusion Matrix")
 
-# sinal_eeg = np.array(sinal_eeg)
+sinal = np.array(sinal_eeg.canais["FP1"])
 
-# modificação que faz com que os intervalos onde acontece convulsão sejam marcados em vermelho
-# no gráfico. Utiliza só um canal. Não fiquei satisfeito, achei bem mais ou menos, porém é mais
-# fácil do que marcar o fazer o plot do intervalo em outra cor. Vou fazer a modificação para
-# plotar em outra cor, mas por enquanto só consegui fazer essa.
+predictions = np.array(predictions)
+
+plt.style.use("fivethirtyeight")
 
 fig, ax = plt.subplots()
 
-ax.plot(sinal_eeg.canais["FP1"], linewidth=1, label="EEG Normal")
+ax.plot(sinal_eeg.canais["FP1"], linewidth=1, label="Normal")
+
 for i in range(0, len(gama_dividido)):
     if gama_dividido[i].ocorre_conv:
         inicio = math.floor(gama_dividido[i].tempo_inicio * fs)
         fim = math.floor(gama_dividido[i].tempo_final * fs)
-        ax.axvspan(inicio, fim, alpha=0.5, color="r")
+        ax.plot(
+            range(inicio, fim),
+            sinal[inicio:fim],
+            color="r",
+            # label="Convulsão",
+            linewidth=1,
+        )
+        plt.legend(loc=0)
+
+
+for i in range(0, len(predictions)):
+    if predictions[i] == 1:
+        inicio = math.floor(gama_dividido[i].tempo_inicio * fs)
+        fim = math.floor(gama_dividido[i].tempo_final * fs)
+        ax.axvspan(inicio, fim, alpha=0.3, color="g")
 
 
 plt.show()
+
+# Colocar o eixo x em segundos. E fazer para os outros canais usando a ideia de cada canal em uma janela do programa, deixando o usuário escolher.

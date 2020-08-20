@@ -25,7 +25,7 @@ def dividir_sinal(sinal, frequencia_sinal):
 
     quantidade_amostras_por_intervalo = frequencia_sinal + 1
 
-    quantidade_intervalos = math.ceil(
+    quantidade_intervalos = math.floor(
         comprimento_sinal / quantidade_amostras_por_intervalo
     )
 
