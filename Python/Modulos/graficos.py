@@ -39,4 +39,4 @@ def faz_graficos(sinal_eeg, canal, gama_dividido, predictions, fs):
 
     grafico_area(predictions, gama_dividido, fs, ax)
 
-    plt.show()
+    return [fig, ax]
